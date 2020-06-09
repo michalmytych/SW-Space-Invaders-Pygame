@@ -3,8 +3,9 @@ from time import sleep
 from pygame import mixer
 from random import randint
 from scipy.spatial import distance
-from GameObjects1_8 import Level, VisibleObject, Charactor, Enemy, Shot, Explosion
-from GameConfig import *
+from model import Level, VisibleObject, Charactor, Enemy, Shot, Explosion
+from config import *
+
 
 
 pygame.init()

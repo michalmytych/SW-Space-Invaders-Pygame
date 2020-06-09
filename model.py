@@ -1,5 +1,5 @@
 # ___________________Lib___________________
-from GameConfig import *
+from config import *
 pygame.init()
 
 
