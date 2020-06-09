@@ -1,7 +1,7 @@
 # SW-Space-Invaders-Pygame
 
 ## What's this?
-It's a simple 2D classic Space Invaders game inspired by StarWars universe. I coded it a long time ago to improve in OOP fundamentals in Python.
+It's a simple 2D classic Space Invaders game inspired by StarWars universe. I coded it a long time ago to improve my basic OOP skill in Python.
 
 ## How can I run it?
 See requirments.txt and use it to install necessary packages with pip.

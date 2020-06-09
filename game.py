@@ -7,39 +7,29 @@ from GameObjects1_8 import Level, VisibleObject, Charactor, Enemy, Shot, Explosi
 from GameConfig import *
 
 
-# Pygame modules init
 pygame.init()
 pygame.display.set_caption(WindowCaption)
 mixer.pre_init(frequency, size, channels, buffer)
 mixer.init()
 
 
-# Window init
 window = pygame.display.set_mode(
     (scr_width*scaling_factor, scr_height*scaling_factor))
 screen = pygame.Surface((scr_width, scr_height))
 
 
-# GameObjects init:
+
+# _________________________________MODEL_________________________________
 clock = pygame.time.Clock()
-# sounds:
 xwingSound = pygame.mixer.Sound(XwingSound)
 TIEfighterSound = pygame.mixer.Sound(TIEfighterSound)
 TIEexplode = pygame.mixer.Sound(TIEexplodeSound)
 cantinaBand = pygame.mixer.Sound(cantinaBandSound)
 wilhelmscream = pygame.mixer.Sound(wilhelmscreamSound)
 xWingExplode = pygame.mixer.Sound(xWingExplodeSound)
-# fonts:
 myfontS = pygame.font.Font(myfontSpath, 16)
 myfontL = pygame.font.Font(myfontLpath, 50)
 
-
-# Events:
-
-
-sleep(2)
-
-# LEVELS:
 
 
 def switchLevel(level_finished):
@@ -63,10 +53,9 @@ def changeLevel(level_finished, lifes_left, killed_enemies):
 
 
 def playLevel(level_count, lifes_left, killed_enemies):
-    # Initalizing level object:
     level = Level(level_count=level_count)
 
-    # Loading in level files:
+
     background = VisibleObject(screen, 0, 0)
     background.sprites = LevelSprites[level_count][0]
     charactor = Charactor(screen, 370, 280, lifes_left, killed_enemies)
@@ -80,35 +69,34 @@ def playLevel(level_count, lifes_left, killed_enemies):
     explosion = Explosion(screen, 0, 0)
     explosion.sprites = LevelSprites[level_count][5]
 
-    # Constants & variables:
+
     charactor.lifesCount = lifes_left
     throwed = Shot.throwed
     shotVel = Shot.shotVel
     enemShotThrowed = Shot.throwed
     enemyShot.shotVel = level.levelVelocityOfEnemyShots
 
-    sleep(2)
 
     run = True
     while run:
-        # fps
         clock.tick(40)
 
-        # obługa eventów
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-        # jesli gracz dojdzie do krawędzi:
+
         if charactor.X >= scr_width-80:
             charactor.X = scr_width-80
         elif charactor.X <= 10:
             charactor.X = 10
 
-        # KONTROLER________________________________________________________
+
+        # CONTROLLER________________________________________________________
         keys = pygame.key.get_pressed()
 
-        # poruszanie się gracza
+
         if keys[pygame.K_LEFT]:
             if charactor.prevMoveState == "right":
                 charactor.charVel = charactor.charVel / 2.5
@@ -126,6 +114,7 @@ def playLevel(level_count, lifes_left, killed_enemies):
                 charactor.charVel -= 0.5
             charactor.moveState = "stop"
 
+
         if keys[pygame.K_SPACE]:
             if throwed == False:
                 xwingSound.play()
@@ -133,11 +122,11 @@ def playLevel(level_count, lifes_left, killed_enemies):
                 shot.X = charactor.X
                 shot.Y = charactor.Y
 
+
         # WIDOK____________________________________________________________
-        # tło levelu:
         background.renderObject()
 
-        # obsługa aktualizacji kontrolera na podstawie state-ów:
+
         if charactor.moveState == "left":
             charactor.prevMoveState = "left"
             charactor.X -= charactor.charVel
@@ -156,11 +145,12 @@ def playLevel(level_count, lifes_left, killed_enemies):
             else:
                 charactor.renderObject()
 
-        # ruch wroga:
+
         if enemy.X <= 1:
             enemy.enemTurn = "right"
         if enemy.X >= scr_width-80:
             enemy.enemTurn = "left"
+
 
         if enemy.enemTurn == "right":
             enemy.X += enemy.enemVel
@@ -171,36 +161,32 @@ def playLevel(level_count, lifes_left, killed_enemies):
             if enemy.enemAlive == True:
                 enemy.renderObject()
 
-        # kiedy gracz strzela:
+
         if throwed == True:
             shot.Y -= shotVel
             shot.renderObjectWithCorrection(5, 0)
             shot.renderObjectWithCorrection(74, 0)
-            # jesli pocisk wyjdzie poza mapę znowu mozna strzelać
             if shot.Y < 0:
                 throwed = False
 
-        # kiedy wróg strzela:
+
         if enemShotThrowed == False:
             if enemy.enemAlive == True:
                 enemShotThrowed = True
                 enemyShot.X = enemy.X
                 enemyShot.Y = enemy.Y
 
+
         if enemShotThrowed == True:
             enemyShot.Y += enemyShot.shotVel
             enemyShot.renderObjectWithCorrection(58, 50)
-            # jesli pocisk pokona randomowy dystans przeciwnik znowu moze strzelac
             if enemyShot.Y > scr_height + randint(30, 5000):
                 TIEfighterSound.play()
                 enemShotThrowed = False
 
-        # Kolizja
 
-        # kolizja przeciwnik / pocisk gracza
         if enemy.enemAlive == True:
             if throwed == True:
-                # sprawdzanie kolizji:
                 if distance.euclidean((shot.X+47, shot.Y), (enemy.X+60, enemy.Y+60)) < 50:
                     explosion.X = enemy.X
                     explosion.Y = enemy.Y
@@ -211,10 +197,8 @@ def playLevel(level_count, lifes_left, killed_enemies):
                     TIEexplode.play()
                     enemy.enemSpawnTime = -(randint(15, 100))
 
-        # kolizja gracz / pocisk przeciwnika
+
         if enemShotThrowed == True:
-            # ewentualne rysowanie odelgosci:
-            #pygame.draw.line(screen, (255,69,0), (charactor.X+45, charactor.Y+47), (enemyShot.X+64, enemyShot.Y+115))
             if distance.euclidean((charactor.X+45, charactor.Y+47), (enemyShot.X+64, enemyShot.Y+115)) < 40:
                 wilhelmscream.play()
                 charactor.lifesCount -= 1
@@ -224,6 +208,7 @@ def playLevel(level_count, lifes_left, killed_enemies):
                     explosion.Y = charactor.Y
                     explosion.renderObject()
                     run = False
+
 
         if enemy.enemAlive == False:
             explosion.expVisible -= 1
@@ -239,7 +224,7 @@ def playLevel(level_count, lifes_left, killed_enemies):
                     enemy.enemTurn = "left"
                 explosion.expVisible = ExplosionVisibleTime
 
-        # wyswietlanie wyniku:
+
         score = myfontS.render(
             f"SCORE     {charactor.killsCount}", True, (255, 255, 255))
         lives = myfontS.render(
@@ -247,12 +232,12 @@ def playLevel(level_count, lifes_left, killed_enemies):
         screen.blit(score, ((scr_width//2)-150, scr_height-15))
         screen.blit(lives, ((scr_width//2)+100, scr_height-15))
 
-        # skalowanie screen do rozmiarów window
+
         window.blit(pygame.transform.scale(
             screen, window.get_rect().size), (0, 0))
         pygame.display.update()
 
-        # w przypadku osiągnięcia limitu zmiana poziomu:
+
         if charactor.killsCount >= NextLevelLimits[level_count]:
             screen.fill(black)
             level_finished = level_count
@@ -266,7 +251,7 @@ def playLevel(level_count, lifes_left, killed_enemies):
             del explosion
             changeLevel(level_finished, lifes_left, killed_enemies)
 
-        # level overview
+
         if charactor.lifesCount <= 0:
             level.levelViewScore(window, screen, charactor.killsCount)
 

@@ -1,7 +1,7 @@
-# Klasy obiektów występujących w grze
-import pygame
+# ___________________Lib___________________
 from GameConfig import *
 pygame.init()
+
 
 
 class Game:
@@ -15,6 +15,7 @@ class Game:
     xWingExplode = pygame.mixer.Sound(xWingExplodeSound)
 
 
+
 class Level(Game):
     def __init__(self,
         level_count=0,
@@ -25,6 +26,7 @@ class Level(Game):
         self.levelVelocityOfEnemyShots = levelVelocityOfEnemyShots
         self.enemiesLevelVelocity = enemiesLevelVelocity
         self.levelEnemySpawnTime = levelEnemySpawnTime 
+
 
     def levelViewScore(self, window, screen, score):
         self.cantinaBand.play()
@@ -41,6 +43,7 @@ class Level(Game):
             pygame.display.update()
 
 
+
 class VisibleObject:
     def __init__(self, screen, X, Y):
         self.screen = screen
@@ -55,6 +58,7 @@ class VisibleObject:
         self.screen.blit(self.sprites[frame], (self.X+correction_x, self.Y+correction_y))
 
 
+
 class Charactor(VisibleObject):
     def __init__(self, screen, X, Y, lifesCount, killsCount):
         self.screen = screen
@@ -64,14 +68,17 @@ class Charactor(VisibleObject):
         self.lifesCount = lifesCount
         self.killsCount = killsCount
     
+
     def renderObject(self, frame=0):
         self.screen.blit(self.sprites[frame], (self.X, self.Y))
+
 
     charVel = CharacterVelocity
     moveState = "stop"
     prevMoveState = "stopping"
     def_lifesCount = 15
     def_killsCount = 0
+
 
 
 class Enemy(VisibleObject):
@@ -81,9 +88,11 @@ class Enemy(VisibleObject):
     enemSpawnTime = EnemySpawnTime
 
         
+
 class Shot(VisibleObject):
     throwed = False
     shotVel = BlasterVelocity
+
 
 
 class Explosion(VisibleObject):
